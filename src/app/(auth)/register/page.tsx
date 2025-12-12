@@ -23,8 +23,8 @@ const RegisterPage = () => {
             <p className="text-muted-foreground">Create your account and start connecting</p>
           </div>
 
-          <Card className="bg-card border-border shadow-card">
-            <CardHeader>
+          <Card className="bg-card border-border shadow-md">
+            <CardHeader className="text-center">
               <CardTitle>Sign Up</CardTitle>
               <CardDescription>Fill in your details to get started</CardDescription>
             </CardHeader>

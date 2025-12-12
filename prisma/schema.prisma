@@ -16,30 +16,11 @@ datasource db {
 }
 
 
-enum UserRole {
-  USER
-  HOST
-  ADMIN
-}
-
-enum EventStatus {
-  OPEN
-  FULL
-  CANCELLED
-  COMPLETED
-}
-
-enum PaymentStatus {
-  PENDING
-  SUCCESS
-  FAILED
-}
-
 
 model User {
   id              String    @id @default(cuid())
   fullName        String
-  email           String    @unique
+  email           String    @unique   
   password        String
   role            UserRole  @default(USER)
   createdAt       DateTime  @default(now())
