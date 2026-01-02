@@ -15,6 +15,25 @@ datasource db {
 
 }
 
+enum UserRole {
+  USER
+  HOST
+  ADMIN
+}
+
+enum EventStatus {
+  OPEN
+  FULL
+  CANCELLED
+  COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
 
 
 model User {
