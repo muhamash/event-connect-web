@@ -29,7 +29,7 @@ export const createUser = async ( payload: RegisterSchemaType ) =>
     {
         const user = await prisma.user.create( {
             data: {
-                fullName: payload.fullName,
+                fullname: payload.fullname,
                 email: payload.email,
                 password: hashedPassword,
                 role: payload.role,
@@ -41,7 +41,7 @@ export const createUser = async ( payload: RegisterSchemaType ) =>
         return {
             success: true,
             message: "User created successfully",
-            data: safeUser,
+            data: JSON.parse(JSON.stringify(safeUser)),
         };
 
     }

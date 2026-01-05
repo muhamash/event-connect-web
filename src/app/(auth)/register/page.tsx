@@ -4,8 +4,14 @@ import RegisterForm from "@/components/modules/auth/RegisterForm";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { Calendar } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
-const RegisterPage = () => {
+const RegisterPage = () =>
+{
+  const searchParams = useSearchParams();
+  const hostLogin = searchParams.get( "tab" );
+
+
   return (
     <div className="min-h-screen bg-background">
 
@@ -19,13 +25,19 @@ const RegisterPage = () => {
             <div className="inline-flex p-3 bg-gradient-primary rounded-2xl mb-4">
               <Calendar className="h-8 w-8 text-primary-foreground" />
             </div>
-            <h1 className="text-3xl font-bold mb-2 text-foreground">Join EventConnect</h1>
+            {
+              hostLogin ? (<h1 className="text-3xl font-bold mb-2 text-foreground">Join as Host to EventConnect</h1>) : (<h1 className="text-3xl font-bold mb-2 text-foreground">Join EventConnect</h1>)
+            }
             <p className="text-muted-foreground">Create your account and start connecting</p>
           </div>
 
           <Card className="bg-card border-border shadow-md">
             <CardHeader className="text-center">
-              <CardTitle>Sign Up</CardTitle>
+              {
+                hostLogin ? ( <CardTitle>Sign Up as Host</CardTitle> ) : (
+                  <CardTitle>Sign Up</CardTitle>
+                )
+              }
               <CardDescription>Fill in your details to get started</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">

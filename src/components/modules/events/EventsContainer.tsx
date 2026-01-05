@@ -1,7 +1,7 @@
 "use client"
 
 
-import { Navbar } from "@/components/Navbar";
+import { Navbar } from "@/components/nav/Navbar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { useMemo, useState } from "react";

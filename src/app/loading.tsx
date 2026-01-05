@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function LoadingPage() {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-orange-900 via-yellow-700 to-gray-900">
+    <div className="fixed inset-0 flex items-center justify-center bg-background">
       {/* animated soft background blobs */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -15,12 +15,12 @@ export default function LoadingPage() {
         <motion.div
           animate={{ x: [ -50, 50, -50 ], y: [ -30, 30, -30 ] }}
           transition={{ repeat: Infinity, duration: 12, ease: "easeInOut" }}
-          className="absolute -left-32 -top-16 w-72 h-72 rounded-full bg-gradient-to-tr from-pink-600 via-purple-600 to-indigo-500 opacity-20 blur-3xl"
+          className="absolute -left-32 -top-16 w-72 h-72 rounded-full bg-gradient-to-tr from-yellow-600 via-orange-600 to-amber-500 opacity-20 blur-3xl"
         />
         <motion.div
           animate={{ x: [ 40, -40, 40 ], y: [ 20, -20, 20 ] }}
           transition={{ repeat: Infinity, duration: 14, ease: "easeInOut" }}
-          className="absolute -right-32 -bottom-16 w-80 h-80 rounded-full bg-gradient-to-tr from-cyan-400 via-blue-500 to-emerald-400 opacity-20 blur-3xl"
+          className="absolute -right-32 -bottom-16 w-80 h-80 rounded-full bg-gradient-to-tr from-yellow-600 via-orange-600 to-amber-500  opacity-20 blur-3xl"
         />
       </motion.div>
 
@@ -29,7 +29,7 @@ export default function LoadingPage() {
         <div className="flex flex-col items-center gap-6">
 
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-indigo-400 to-pink-400 flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-400 to-yellow-400 flex items-center justify-center shadow-lg">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 2L19 8v8l-7 6-7-6V8l7-6z" fill="white" opacity="0.95" />
               </svg>

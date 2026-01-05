@@ -26,6 +26,7 @@ enum EventStatus {
   FULL
   CANCELLED
   COMPLETED
+  SUSPENDED
 }
 
 enum PaymentStatus {
@@ -35,42 +36,58 @@ enum PaymentStatus {
 }
 
 
-
 model User {
-  id              String    @id @default(cuid())
-  name            String
-  email           String    @unique   
+  id              String       @id @default(cuid())
+  fullname        String
+  email           String       @unique
   password        String
-  role            UserRole  @default(USER)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  role            UserRole     @default(USER)
 
-  // Relations
-  profile         Profile?
-  hostedEvents    Event[]        @relation("HostedEvents")
-  joinedEvents    Participant[]  @relation("UserParticipants")
-  reviewsWritten  Review[]       @relation("UserReviews")
-  payments        Payment[]
+  bio             String?
+  image           String?
+  location        String?
+  interests       String[]     @default([])
+
+  rating          Float        @default(0)
+  totalReviews    Int          @default(0)
+  eventsHosted    Int          @default(0)
+  eventsAttended  Int          @default(0)
+
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  hostedEvents     Event[]        @relation("HostedEvents")
+  joinedEvents     Participant[]  @relation("UserParticipants")
+  reviewsWritten   Review[]       @relation("UserReviews")
+  reviewsReceived  Review[]       @relation("HostReviews")
+  payments         Payment[]
+
+  auditLogs AuditLog[]
 }
 
-model Profile {
+model Review {
   id        String   @id @default(cuid())
-  userId    String   @unique
-  bio       String?  
-  image     String?
-  location  String?
-  interests String[] @default([])
+  eventId   String
+  userId    String
+  hostId    String
 
-  user      User     @relation(fields: [userId], references: [id])
+  rating    Int      @db.SmallInt
+  comment   String?
+  createdAt DateTime @default(now())
+
+  event     Event    @relation(fields: [eventId], references: [id])
+  reviewer  User     @relation("UserReviews", fields: [userId], references: [id])
+  host      User     @relation("HostReviews", fields: [hostId], references: [id])
+
+  @@unique([eventId, userId])
+  @@index([hostId])
 }
 
-// ------------------------------------------------------
-// EVENT MODEL
-// ------------------------------------------------------
 
 model Event {
   id              String        @id @default(cuid())
   hostId          String
+
   title           String
   category        String
   description     String
@@ -90,57 +107,54 @@ model Event {
   participants    Participant[] @relation("EventParticipants")
   reviews         Review[]
   payments        Payment[]
+
+  @@index([hostId])
+  @@index([status])
 }
 
-// ------------------------------------------------------
-// PARTICIPANTS MODEL (Event Members)
-// ------------------------------------------------------
 
 model Participant {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   eventId   String
   userId    String
-  joinedAt  DateTime @default(now())
+  joinedAt  DateTime  @default(now())
 
   // Relations
-  event     Event    @relation("EventParticipants", fields: [eventId], references: [id])
-  user      User     @relation("UserParticipants", fields: [userId], references: [id])
+  event     Event     @relation("EventParticipants", fields: [eventId], references: [id])
+  user      User      @relation("UserParticipants", fields: [userId], references: [id])
 
-  @@unique([eventId, userId]) 
+  @@unique([eventId, userId])
+  @@index([userId])
+  @@index([eventId])
 }
 
-// ------------------------------------------------------
-// REVIEWS MODEL (Host Reviews)
-// ------------------------------------------------------
-
-model Review {
-  id        String   @id @default(cuid())
-  eventId   String
-  userId    String     // review written by user
-  rating    Int        // 1–5
-  comment   String?
-  createdAt DateTime    @default(now())
-
-  // Relations
-  event     Event      @relation(fields: [eventId], references: [id])
-  user      User       @relation("UserReviews", fields: [userId], references: [id])
-}
-
-// ------------------------------------------------------
-// PAYMENT MODEL
-// ------------------------------------------------------
 
 model Payment {
-  id          String        @id @default(cuid())
-  eventId     String
-  userId      String
-  amount      Float
-  status      PaymentStatus @default(PENDING)
-  provider    String        // Stripe, AmarPay, SSLCommerz
-  txnId       String?       // gateway reference
-  createdAt   DateTime      @default(now())
+  id        String        @id @default(cuid())
+  eventId   String
+  userId    String
+
+  amount Decimal @db.Decimal(10,2)
+
+  status    PaymentStatus @default(PENDING)
+  provider  String        // Stripe, SSLCommerz, AmarPay
+  txnId     String?
+
+  createdAt DateTime      @default(now())
 
   // Relations
-  event       Event @relation(fields: [eventId], references: [id])
-  user        User  @relation(fields: [userId], references: [id])
+  event     Event         @relation(fields: [eventId], references: [id])
+  user      User          @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([eventId])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  target    String?   // eventId, reviewId, etc.
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 }

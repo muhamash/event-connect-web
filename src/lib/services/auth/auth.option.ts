@@ -11,7 +11,7 @@ declare module "next-auth" {
     user: {
       id: string;
       email: string;
-        name?: string;
+        fullname?: string;
       role: string;
     } & DefaultSession["user"];
     accessToken: string;
@@ -21,7 +21,7 @@ declare module "next-auth" {
   interface User extends DefaultUser {
     id: string;
     email: string;
-    name?: string;
+    fullname?: string;
     role: string;
   }
 }
@@ -30,7 +30,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     email: string;
-    name: string; 
+    fullname: string; 
     role: string;
     accessToken: string;
     refreshToken: string;
@@ -63,7 +63,7 @@ export const authOptions: NextAuthOptions = {
                 return {
                     id: user.id,
                     email: user.email,
-                    name: user.name, 
+                    fullname: user.fullname, 
                     role: user.role,
                 };
             },
@@ -72,7 +72,7 @@ export const authOptions: NextAuthOptions = {
 
     session: { strategy: "jwt" },
     secret: process.env.AUTH_SECRET,
-    jwt: { maxAge: 60 },
+    jwt: { maxAge: 600 },
 
     callbacks: {
         async jwt ( { token, user } )
@@ -84,7 +84,7 @@ export const authOptions: NextAuthOptions = {
                 return {
                     id: user.id,
                     email: user.email,
-                    name: user.name, 
+                    fullname: user.fullname, 
                     role: user.role,
                     accessToken,
                     refreshToken,
@@ -135,7 +135,7 @@ export const authOptions: NextAuthOptions = {
                 session.user = {
                     id: token.id as string,
                     email: token.email as string,
-                    name: token.name as string, 
+                    fullname: token.fullname as string, 
                     role: token.role as string,
                 };
                 

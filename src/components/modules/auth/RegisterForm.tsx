@@ -25,34 +25,40 @@ import
 
 import { UserRole } from "@/lib/constants/enum.constant";
 import { createUser } from "@/lib/services/auth/auth.service";
-import { RegisterSchema, RegisterSchemaType } from "@/lib/services/auth/auth.validation";
+import { RegisterSchemaType } from "@/lib/services/auth/auth.type";
+import { RegisterSchema } from "@/lib/services/auth/auth.validation";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { startTransition, useTransition } from "react";
 import toast from "react-hot-toast";
 
 
-export default function RegisterForm() {
+export default function RegisterForm ()
+{
+    const searchParams = useSearchParams();
+    const hostLogin = searchParams.get( "tab" );
+
     const form = useForm<RegisterSchemaType>( {
         resolver: zodResolver( RegisterSchema ),
         defaultValues: {
-            fullName: "",
+            fullname: "",
             email: "",
             password: "",
             confirmPassword: "",
-            role: UserRole.USER,
+            role:  hostLogin?.toUpperCase() ?? UserRole.USER,
         },
     } );
 
     const [ isPending, StartTransition ] = useTransition();
     const router = useRouter();
+    
 
     const onSubmit = ( data: RegisterSchemaType ) =>
     {
         startTransition( async () =>
         {
             const response = await createUser( data );
-            console.log( "Server Response:", response );
+            console.log( "Server Response:", response, data );
 
             if ( response?.success )
             {
@@ -74,7 +80,7 @@ export default function RegisterForm() {
                 {/* Full Name */}
                 <FormField
                     control={form.control}
-                    name="fullName"
+                    name="fullname"
                     render={( { field } ) => (
                         <FormItem>
                             <FormLabel>Full Name</FormLabel>
@@ -151,28 +157,32 @@ export default function RegisterForm() {
                 />
 
                 {/* ROLE SELECTION */}
-                <FormField
-                    control={form.control}
-                    name="role"
-                    render={( { field } ) => (
-                        <FormItem>
-                            <FormLabel>Register As</FormLabel>
-                            <FormControl>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <SelectTrigger className="bg-background border-border">
-                                        <SelectValue placeholder="Select role" />
-                                    </SelectTrigger>
-                                    <SelectContent className="bg-black/60 backdrop-blur-md text-white font-bold">
-                                        <SelectItem value="USER">User</SelectItem>
-                                        <SelectItem value="ADMIN">Admin</SelectItem>
-                                        <SelectItem value="HOST">Host</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                {
+                    !hostLogin && (
+                        <FormField
+                            control={form.control}
+                            name="role"
+                            render={( { field } ) => (
+                                <FormItem>
+                                    <FormLabel>Register As</FormLabel>
+                                    <FormControl>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <SelectTrigger className="bg-background border-border">
+                                                <SelectValue placeholder="Select role" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-black/60 backdrop-blur-md text-white font-bold">
+                                                <SelectItem value="USER">User</SelectItem>
+                                                <SelectItem value="ADMIN">Admin</SelectItem>
+                                                <SelectItem value="HOST">Host</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    )
+                }
 
                 {/* Submit */}
                 <Button

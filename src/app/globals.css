@@ -42,6 +42,68 @@
   --radius-lg: var(--radius);
 }
 
+@layer utilities {
+  /* =========================
+     GRADIENTS
+     ========================= */
+  .bg-gradient-primary {
+    background-image: var(--gradient-primary);
+  }
+
+  .bg-gradient-gold {
+    background-image: var(--gradient-gold);
+  }
+
+  .bg-gradient-dark {
+    background-image: var(--gradient-dark);
+  }
+
+  .bg-gradient-overlay {
+    background-image: var(--gradient-overlay);
+  }
+
+  /* =========================
+     SHADOWS
+     ========================= */
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .shadow-gold {
+    box-shadow: var(--shadow-gold);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  /* =========================
+     TRANSITIONS
+     ========================= */
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+
+  .transition-bounce {
+    transition: var(--transition-bounce);
+  }
+
+  /* =========================
+     RADIUS (optional helpers)
+     ========================= */
+  .rounded-theme {
+    border-radius: var(--radius);
+  }
+
+  .rounded-theme-sm {
+    border-radius: calc(var(--radius) - 4px);
+  }
+
+  .rounded-theme-md {
+    border-radius: calc(var(--radius) - 2px);
+  }
+}
+
 
 @layer base {
   :root {
