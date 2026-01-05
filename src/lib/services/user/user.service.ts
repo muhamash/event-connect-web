@@ -11,7 +11,16 @@ export const getUserInfoById = async ( id: string ) =>
         const existingUser = await prisma.user.findUnique( {
             where: {
                 id
-            }
+            },
+            include: {
+                hostedEvents: true,
+                joinedEvents: true,
+                reviewsReceived: true,
+                reviewsWritten: true,
+                // password: false
+                // payments
+            },
+           
         } )
     
         if ( !existingUser )
@@ -37,3 +46,4 @@ export const getUserInfoById = async ( id: string ) =>
         };
     }
 };
+

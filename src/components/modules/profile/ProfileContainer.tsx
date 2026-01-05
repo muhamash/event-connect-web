@@ -6,10 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { formatDate } from "@/lib/utils";
 import { motion } from "framer-motion";
 import
   {
-    Award,
     Calendar,
     CalendarDays,
     Edit,
@@ -22,25 +22,30 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { use } from "react";
 
+interface ProfileProps
+{
+  userPromise: Promise<any>;
+  userId?: string;
+}
 
-const Profile = ( { userPromise }: { userPromise: Promise<any> } ) =>
+const Profile = ( { userPromise, userId }: ProfileProps ) =>
 {
  
   // console.log(userPromise)
   const userData = use( userPromise )
-  console.log(userData)
+  console.log(userData?.data)
   
   const { id } = useParams();
   const user = mockUsers.find((u) => u.id === id) || mockUsers[0];
-  const isOwnProfile = true; 
+  const isOwnProfile = userData?.data?.id === userId; 
 
   const hostedEvents = mockEvents.filter((e) => e.hostId === user.id);
   const attendedEvents = mockEvents.slice(0, 3); 
   const userReviews = mockReviews;
 
-    if (!userData || (userData as any).success === false) {
+  if (!userData || (userData as any).success === false) {
     return <div className="text-center py-20 text-rose-700 font-bold uppercase">User not found</div>;
-    }
+  };
   
   const fadeInUp = {
     initial: { opacity: 0, y: 20 },
@@ -60,9 +65,9 @@ const Profile = ( { userPromise }: { userPromise: Promise<any> } ) =>
               <CardContent className="p-6 -mt-16">
                 <div className="flex flex-col md:flex-row gap-6 items-start md:items-end">
                   <Avatar className="h-32 w-32 border-4 border-background shadow-glow">
-                    <AvatarImage src={user.avatar} alt={user.name} />
+                    <AvatarImage src={userData?.data?.image} alt={userData?.data?.fullname} />
                     <AvatarFallback className="text-3xl bg-primary text-primary-foreground">
-                      {user.name.charAt(0)}
+                      {userData?.data?.fullname?.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
 
@@ -70,27 +75,27 @@ const Profile = ( { userPromise }: { userPromise: Promise<any> } ) =>
                     <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
                       <div>
                         <h1 className="text-3xl font-bold text-foreground">
-                          {user.name}
+                          {userData?.data?.fullname}
                         </h1>
-                        <div className="flex items-center gap-2 text-muted-foreground">
+                        <div className="flex items-center gap-2 text-muted-foreground my-1">
                           <MapPin className="h-4 w-4" />
-                          <span>{user.location}</span>
+                          <span>{userData?.data?.location ?? "N/A"}</span>
                         </div>
                       </div>
-                      {user.isHost && (
-                        <Badge className="bg-gradient-primary text-primary-foreground w-fit">
-                          <Award className="h-3 w-3 mr-1" />
-                          Verified Host
-                        </Badge>
-                      )}
+                      
                     </div>
 
                     <p className="text-muted-foreground max-w-2xl mb-4">
-                      {user.bio}
+                      {userData?.data?.bio ?? "Bio is empty"}
                     </p>
 
                     <div className="flex flex-wrap gap-2">
-                      {user.interests.map((interest) => (
+                      {
+                        userData?.data?.interests?.length === 0 && (
+                          <p>N/A</p>
+                        )
+                      }
+                      {userData?.data?.interests?.map((interest) => (
                         <Badge
                           key={interest}
                           variant="outline"
@@ -128,10 +133,10 @@ const Profile = ( { userPromise }: { userPromise: Promise<any> } ) =>
               <CardContent className="p-6 text-center">
                 <div className="flex items-center justify-center gap-2 text-primary mb-2">
                   <Star className="h-5 w-5 fill-primary" />
-                  <span className="text-2xl font-bold">{user.rating}</span>
+                  <span className="text-2xl font-bold">{userData?.data?.rating ?? 0}</span>
                 </div>
                 <p className="text-muted-foreground text-sm">
-                  {user.totalReviews} reviews
+                  {userData?.data?.totalReviews ?? 0} reviews
                 </p>
               </CardContent>
             </Card>
@@ -140,7 +145,7 @@ const Profile = ( { userPromise }: { userPromise: Promise<any> } ) =>
               <CardContent className="p-6 text-center">
                 <div className="flex items-center justify-center gap-2 text-secondary mb-2">
                   <CalendarDays className="h-5 w-5" />
-                  <span className="text-2xl font-bold">{user.eventsHosted}</span>
+                  <span className="text-2xl font-bold">{userData?.data?.eventsHosted ?? 0}</span>
                 </div>
                 <p className="text-muted-foreground text-sm">Events Hosted</p>
               </CardContent>
@@ -150,7 +155,7 @@ const Profile = ( { userPromise }: { userPromise: Promise<any> } ) =>
               <CardContent className="p-6 text-center">
                 <div className="flex items-center justify-center gap-2 text-accent mb-2">
                   <Ticket className="h-5 w-5" />
-                  <span className="text-2xl font-bold">{user.eventsAttended}</span>
+                  <span className="text-2xl font-bold">{userData?.data?.eventsAttended ?? 0}</span>
                 </div>
                 <p className="text-muted-foreground text-sm">Events Attended</p>
               </CardContent>
@@ -160,7 +165,7 @@ const Profile = ( { userPromise }: { userPromise: Promise<any> } ) =>
               <CardContent className="p-6 text-center">
                 <div className="flex items-center justify-center gap-2 text-primary mb-2">
                   <Calendar className="h-5 w-5" />
-                  <span className="text-sm font-bold">{user.joinedDate}</span>
+                  <span className="text-sm font-bold">{formatDate(userData?.data?.createdAt, { withTime: false })}</span>
                 </div>
                 <p className="text-muted-foreground text-sm">Member Since</p>
               </CardContent>
@@ -168,6 +173,7 @@ const Profile = ( { userPromise }: { userPromise: Promise<any> } ) =>
           </motion.div>
 
           {/* Tabs Section */}
+          {/* for admin no tabs, for host oka , for user only attended events */}
           <motion.div {...fadeInUp} transition={{ delay: 0.2 }}>
             <Tabs defaultValue="hosted" className="w-full">
               <TabsList className="bg-muted mb-6">

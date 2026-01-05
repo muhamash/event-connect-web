@@ -20,3 +20,9 @@ export type NavItem = {
   variant?: "link" | "ghost" | "outline" | "primary";
   action?: "logout";
 };
+
+export type DateFormatOptions = {
+  locale?: string;
+  withTime?: boolean;
+  withSeconds?: boolean;
+};

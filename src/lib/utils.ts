@@ -3,7 +3,7 @@ import type { LucideIcon } from "lucide-react";
 import * as Icons from "lucide-react";
 import { twMerge } from "tailwind-merge";
 import { ZodObject } from "zod";
-import { IInputErrorState } from "../types/utils.type";
+import { DateFormatOptions, IInputErrorState } from "../types/utils.type";
 
 export const zodValidator = <T>(payload: T, schema: ZodObject) => {
     const validatedPayload = schema.safeParse(payload)
@@ -125,4 +125,37 @@ export const extractNextAuthError = ( response: any ) =>
 
     // Case 3: Generic fallback
     return "Authentication failed";
+};
+
+export const formatDate = (
+    isoDate: string | Date,
+    options: DateFormatOptions = {}
+): string =>
+{
+    const {
+        locale = "en-US",
+        withTime = true,
+        withSeconds = false,
+    } = options;
+
+    const date = typeof isoDate === "string" ? new Date( isoDate ) : isoDate;
+
+    if ( isNaN( date.getTime() ) ) return "Invalid date";
+
+    const dateOptions: Intl.DateTimeFormatOptions = {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+    };
+
+    const timeOptions: Intl.DateTimeFormatOptions = {
+        hour: "2-digit",
+        minute: "2-digit",
+        ...( withSeconds && { second: "2-digit" } ),
+    };
+
+    return new Intl.DateTimeFormat( locale, {
+        ...dateOptions,
+        ...( withTime ? timeOptions : {} ),
+    } ).format( date );
 };
