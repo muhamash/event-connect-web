@@ -1,6 +1,5 @@
 "use client";
 
-import { UserRole } from "@/generated/prisma/enums";
 import { AnimatePresence, motion } from "framer-motion";
 import { Calendar, Menu, X } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -8,7 +7,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { NavbarSkeleton } from "../skeletons/NavSkelton";
 import { Badge } from "../ui/badge";
-import { NavRenderer } from "./Nav.util.tsx";
+import { NavRenderer } from "./Nav.util";
 
 export const Navbar = () => {
   const [ isOpen, setIsOpen ] = useState( false );
@@ -19,10 +18,10 @@ export const Navbar = () => {
     return <NavbarSkeleton/>
   }
 
-  console.log(session?.data)
+  // console.log(session?.data)
   const isLoggedIn = session?.data ? true : false;
 
-  const role: UserRole = session?.data?.user?.role?.toLowerCase() || "guest";
+  const role = session?.data?.user?.role?.toLowerCase();
 
   return (
     <nav className="fixed top-0 z-50 w-full bg-background/80 backdrop-blur border-b">

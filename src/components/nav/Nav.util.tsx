@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { UserRole } from "@/generated/prisma/enums";
 import { NAV_ITEMS } from "@/lib/constants/nav.constant";
+import { UserRole } from "@/types/utils.type";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 

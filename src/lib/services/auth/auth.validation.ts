@@ -20,7 +20,7 @@ export const RegisterSchema = z
     email: z.string().email( { message: "Enter a valid email" } ),
 
     role: z.nativeEnum(UserRole, {
-      required_error: "Please select a role",
+      message: "Please select a role",
     }),
     password: z
       .string()

@@ -1,6 +1,6 @@
 import { LucideIcon } from "lucide-react";
 
-export type UserRole = "guest" | "user" | "host" | "admin";
+export type UserRole = "guest" | "user" | "host" | "admin" | undefined | string;
 
 export interface IInputErrorState
 {

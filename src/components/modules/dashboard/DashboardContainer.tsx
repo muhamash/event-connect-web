@@ -6,43 +6,43 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import
-    {
-        DropdownMenu,
-        DropdownMenuContent,
-        DropdownMenuItem,
-        DropdownMenuTrigger,
-    } from "@/components/ui/dropdown-menu";
+  {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+  } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import
-    {
-        Table,
-        TableBody,
-        TableCell,
-        TableHead,
-        TableHeader,
-        TableRow,
-    } from "@/components/ui/table";
+  {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+  } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
 import
-    {
-        Bookmark,
-        Calendar,
-        CheckCircle,
-        ChevronRight,
-        Clock,
-        DollarSign,
-        Edit,
-        Eye,
-        MapPin,
-        MoreHorizontal,
-        Plus,
-        Search,
-        Star,
-        TrendingUp,
-        Users,
-        XCircle
-    } from "lucide-react";
+  {
+    Bookmark,
+    Calendar,
+    CheckCircle,
+    ChevronRight,
+    Clock,
+    DollarSign,
+    Edit,
+    Eye,
+    MapPin,
+    MoreHorizontal,
+    Plus,
+    Search,
+    Star,
+    TrendingUp,
+    Users,
+    XCircle
+  } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -100,7 +100,7 @@ const Dashboard = () => {
             {joinedEvents.length > 0 ? (
               <div className="space-y-4">
                 {joinedEvents.map((event) => (
-                  <Link key={event.id} to={`/events/${event.id}`} className="block">
+                  <Link key={event.id} href={`/events/${event.id}`} className="block">
                     <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
                       <img
                         src={event.image}
@@ -196,7 +196,7 @@ const Dashboard = () => {
           <CardContent>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {savedEvents.map((event) => (
-                <Link key={event.id} to={`/events/${event.id}`}>
+                <Link key={event.id} href={`/events/${event.id}`}>
                   <Card className="bg-muted/50 border-border hover:border-primary/50 transition-all group overflow-hidden">
                     <div className="relative h-32 overflow-hidden">
                       <img

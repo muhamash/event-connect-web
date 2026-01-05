@@ -8,7 +8,7 @@ import
     User,
     Users,
   } from "lucide-react";
-import { NavItem } from "../types/utils.type";
+import { NavItem } from "../../types/utils.type";
 
 
 export const NAV_ITEMS: NavItem[] = [

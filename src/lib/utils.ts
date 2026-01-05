@@ -3,7 +3,7 @@ import type { LucideIcon } from "lucide-react";
 import * as Icons from "lucide-react";
 import { twMerge } from "tailwind-merge";
 import { ZodObject } from "zod";
-import { IInputErrorState } from "./types/utils.type";
+import { IInputErrorState } from "../types/utils.type";
 
 export const zodValidator = <T>(payload: T, schema: ZodObject) => {
     const validatedPayload = schema.safeParse(payload)

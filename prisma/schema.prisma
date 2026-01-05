@@ -94,8 +94,7 @@ model Event {
   image           String?
   date            DateTime
   location        String
-  requiredMin     Int
-  requiredMax     Int
+  maxParticipants     Int
   joiningFee      Float         @default(0)
   status          EventStatus   @default(OPEN)
 

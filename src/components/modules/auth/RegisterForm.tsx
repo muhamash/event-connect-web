@@ -45,7 +45,7 @@ export default function RegisterForm ()
             email: "",
             password: "",
             confirmPassword: "",
-            role:  hostLogin?.toUpperCase() ?? UserRole.USER,
+            role:  hostLogin ? UserRole.HOST : UserRole.USER,
         },
     } );
 

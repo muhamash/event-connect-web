@@ -1,3 +1,4 @@
+import z from "zod";
 import { LoginSchema, RegisterSchema } from "./auth.validation";
 
 
