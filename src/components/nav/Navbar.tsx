@@ -19,9 +19,9 @@ export const Navbar = () => {
   }
 
   // console.log(session?.data)
-  const isLoggedIn = session?.data ? true : false;
+  const isLoggedIn = session?.data?.user?.role ? true : false;
 
-  const role = session?.data?.user?.role?.toLowerCase();
+  const role = session?.data?.user?.role?.toLowerCase() ?? "guest";
 
   return (
     <nav className="fixed top-0 z-50 w-full bg-background/80 backdrop-blur border-b">
