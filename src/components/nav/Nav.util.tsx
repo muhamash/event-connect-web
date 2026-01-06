@@ -1,90 +1,53 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { NAV_ITEMS } from "@/lib/constants/nav.constant";
 import { UserRole } from "@/types/utils.type";
+import { AnimatePresence, motion } from "framer-motion";
+import { Menu, X } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
-
+import { useState } from "react";
 
 type Props = {
   role: UserRole;
-  isMobile?: boolean;
-  closeMenu?: () => void;
 };
 
-export const NavRenderer = ( { role, isMobile, closeMenu }: Props ) =>
-{
+export const NavRenderer = ({ role }: Props) => {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const toggleDrawer = () => setDrawerOpen((prev) => !prev);
+
+  const navItems = NAV_ITEMS.filter((item) => item.roles.includes(role));
+
   return (
     <>
-      {NAV_ITEMS.filter( item => item.roles.includes( role ) ).map( item =>
-      {
-        const Icon = item.icon;
 
-        const base =
-          isMobile
-            ? "w-full justify-start"
-            : "flex items-center gap-1";
 
-        //  (Logout)
-        if ( item.action === "logout" )
-        {
-          return (
+      {/* Desktop Menu */}
+      <div className="hidden md:flex gap-4 items-center">
+        {navItems.map((item) =>
+          item.action === "logout" ? (
             <Button
               key={item.label}
               variant={item.variant ?? "outline"}
-              onClick={() =>
-              {
-                closeMenu?.();
-                signOut({ callbackUrl: "/login" });
-              }}
-              className={`${ base } border-primary text-primary hover:bg-primary hover:text-primary-foreground`}
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              className="flex items-center gap-1 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
             >
-              {Icon && <Icon className="h-4 w-4" />}
+              {item.icon && <item.icon className="h-4 w-4" />}
               {item.label}
             </Button>
-          );
-        }
-
-        //PRIMARY CTA
-        if ( item.variant === "primary" )
-        {
-          return (
-            <Link key={item.label} href={item.href!} onClick={closeMenu}>
-              <Button className={`${ base } bg-gradient-primary hover:shadow-glow`}>
+          ) : (
+            <Link key={item.label} href={item.href!}>
+              <Button variant={item.variant ?? "ghost"} className="flex items-center gap-1">
+                {item.icon && <item.icon className="h-4 w-4" />}
                 {item.label}
               </Button>
             </Link>
-          );
-        }
+          )
+        )}
+      </div>
 
-        // BUTTON LINKS
-        if ( item.variant )
-        {
-          return (
-            <Link key={item.label} href={item.href!} onClick={closeMenu}>
-              <Button
-                variant={item.variant}
-                className={`${ base } border-primary text-primary hover:bg-primary hover:text-primary-foreground`}
-              >
-                {Icon && <Icon className="h-4 w-4" />}
-                {item.label}
-              </Button>
-            </Link>
-          );
-        }
-
-        //  NORMAL LINKS
-        return (
-          <Link
-            key={item.label}
-            href={item.href!}
-            onClick={closeMenu}
-            className={`text-foreground hover:text-primary transition-colors ${ base }`}
-          >
-            {Icon && <Icon className="h-4 w-4" />}
-            {item.label}
-          </Link>
-        );
-      } )}
     </>
   );
 };

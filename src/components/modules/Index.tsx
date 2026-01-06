@@ -94,7 +94,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
 
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-16">
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20 md:pt-10">
         <div className="absolute inset-0 z-0">
           <img
             src={"/assets/hero-events.jpg"}
@@ -110,7 +110,7 @@ const Index = () => {
           transition={{ duration: 0.8 }}
           className="container mx-auto px-4 z-10 text-center"
         >
-          <Badge className="mb-6 bg-primary/20 text-primary border-primary/30 backdrop-blur-sm">
+          <Badge className="mb-6 bg-green/30 text-rose-50 border-yellow-600 backdrop-blur-sm">
             🎉 Join 50,000+ Active Members
           </Badge>
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
