@@ -50,7 +50,7 @@ const EventDetails = ( { eventPromise, sessionRole }: EventDetailsProps ) =>
   return (
     <div className="min-h-screen bg-background">
 
-      <div className="pt-15">
+      <div className="pt-15 container mx-auto">
         {/* Hero Image */}
         <div className="relative h-[50vh] overflow-hidden">
           <img
@@ -59,7 +59,16 @@ const EventDetails = ( { eventPromise, sessionRole }: EventDetailsProps ) =>
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-overlay" />
-          <div className="absolute top-6 right-6 flex gap-2">
+          {
+            sessionRole !== UserRole.USER && (
+              <div className="absolute top-6 left-6 flex  items-center gap-5">
+            <Badge className="bg-rose-700 w-20 h-10 flex items-center justify-center">{ eventData?.data?.status }</Badge>
+            {/* <ShareButton /> */}
+          </div>
+            )
+          }
+          <div className="absolute top-6 right-6 flex  items-center gap-5">
+            {/* <Badge>{ eventData?.data?.status }</Badge> */}
             <ShareButton />
           </div>
         </div>

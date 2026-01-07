@@ -3,9 +3,10 @@
 import prisma from "@/lib/config/db/prisma.db";
 import { EventStatus } from "@/lib/constants/enum.constant";
 import { resolveDateRange } from "@/lib/utils";
+import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
-import { CreateEventPayload, GetAllEventsOptions, GetEventsOptionsOnUserEvents } from "./event.type";
-
+import { authOptions } from "../auth/auth.option";
+import { CreateEventPayload, EventFormValues, GetAllEventsOptions, GetEventsOptionsOnUserEvents } from "./event.type";
 
 
 export async function createEvent(
@@ -63,7 +64,6 @@ export async function createEvent(
     throw new Error("Failed to create event");
   }
 };
-
 
 export async function getEventForTheUserBasedOnRole({
   role,
@@ -124,6 +124,7 @@ export async function getEventForTheUserBasedOnRole({
         include: {
           participants: true,
           host: true,
+          reviews: true
         },
       });
     } else {
@@ -230,6 +231,8 @@ export async function getAllEvents({
       ];
     }
 
+    filters.status = EventStatus.OPEN;
+
     // Date filter (single day)
     if (dateRange) {
       const range = resolveDateRange(dateRange);
@@ -255,6 +258,7 @@ export async function getAllEvents({
       include: {
         host: true,
         participants: true,
+        reviews: true,
       },
     });
 
@@ -288,7 +292,6 @@ export async function getAllEvents({
     };
   }
 };
-
 
 export async function getEventById(eventId: string) {
   try {
@@ -336,6 +339,64 @@ export async function getEventById(eventId: string) {
       success: false,
       message: "Failed to fetch event",
       data: null,
+    };
+  }
+}
+
+export async function updateEventAction(
+  eventId: string,
+  payload: EventFormValues
+) {
+  try {
+
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return { success: false, message: "Unauthorized" };
+    }
+
+    
+
+    const existingEvent = await prisma.event.findUnique({
+      where: { id: eventId },
+      select: { hostId: true },
+    });
+
+    if (!existingEvent) {
+      return { success: false, message: "Event not found" };
+    }
+
+    if (existingEvent.hostId !== session.user.id) {
+      return { success: false, message: "Forbidden" };
+    }
+
+    await prisma.event.update({
+      where: { id: eventId },
+      data: {
+        title: payload.title,
+        category: payload.category,
+        description: payload.description,
+        image: payload.image,
+        date: payload.date,
+        time: payload.time,
+        location: payload.location,
+        maxParticipants: payload.maxParticipants,
+        joiningFee: payload.joiningFee,
+      },
+    });
+
+    revalidatePath("/dashboard");
+    revalidatePath(`/events/${eventId}`);
+    revalidatePath(`/edit-event/${eventId}`);
+
+    return {
+      success: true,
+      message: "Event updated successfully",
+    };
+  } catch (error) {
+    console.error("Update Event Error:", error);
+    return {
+      success: false,
+      message: "Something went wrong while updating event",
     };
   }
 }

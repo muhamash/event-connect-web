@@ -31,7 +31,6 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
       title: event.title,
       description: event.description.slice(0, 150),
       type: "website",
-      // url: `https://yourdomain.com/events/${event.id}`,
       images: event.image ? [{ url: event.image, width: 800, height: 600 }] : [],
     },
 
