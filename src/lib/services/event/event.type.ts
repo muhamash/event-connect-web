@@ -26,3 +26,12 @@ export interface GetEventsOptionsOnUserEvents {
   status?: string;
   search?: string;
 }
+
+export type GetAllEventsOptions = {
+  page?: number;
+  limit?: number;
+  category?: string;
+  dateRange?: string;
+  location?: string;
+  search?: string;
+};

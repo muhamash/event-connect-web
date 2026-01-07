@@ -2,8 +2,9 @@
 
 import prisma from "@/lib/config/db/prisma.db";
 import { EventStatus } from "@/lib/constants/enum.constant";
+import { resolveDateRange } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
-import { CreateEventPayload, GetEventsOptionsOnUserEvents } from "./event.type";
+import { CreateEventPayload, GetAllEventsOptions, GetEventsOptionsOnUserEvents } from "./event.type";
 
 
 
@@ -180,6 +181,103 @@ export async function getEventForTheUserBasedOnRole({
     catch ( error: any )
     {
     console.error("Error fetching events:", error);
+    return {
+      message: "Error fetching events",
+      success: false,
+      data: {
+        events: [],
+        pagination: {},
+      },
+    };
+  }
+};
+
+export async function getAllEvents({
+  page = 1,
+  limit = 3,
+  category,
+  dateRange,
+  location,
+  search,
+}: GetAllEventsOptions) {
+  try {
+    const skip = ( page - 1 ) * limit;
+    console.log( category,
+      dateRange,
+      location,
+      search, );
+
+    const filters: any = {};
+
+    // Category filter
+    if (category) {
+      filters.category = category;
+    }
+
+    // Location filter (partial match)
+    if (location) {
+      filters.location = {
+        contains: location,
+        mode: "insensitive",
+      };
+    }
+
+    // Search filter (title OR description)
+    if (search && typeof search === "string") {
+      filters.OR = [
+        { title: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
+      ];
+    }
+
+    // Date filter (single day)
+    if (dateRange) {
+      const range = resolveDateRange(dateRange);
+
+      if (range) {
+        filters.date = range;
+      }
+    }
+
+    // Count total events
+    const total = await prisma.event.count({
+      where: filters,
+    });
+
+    // Fetch events
+    const events = await prisma.event.findMany({
+      where: filters,
+      orderBy: {
+        date: "desc",
+      },
+      skip,
+      take: limit,
+      include: {
+        host: true,
+        participants: true,
+      },
+    });
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      message: "Fetched all events",
+      success: true,
+      data: {
+        events,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages,
+        },
+      },
+    };
+  }
+  catch ( error: any )
+  {
+    console.error("Error fetching all events:", error);
+
     return {
       message: "Error fetching events",
       success: false,

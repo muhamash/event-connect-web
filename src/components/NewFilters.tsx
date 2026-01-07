@@ -199,7 +199,7 @@ export const NewEventFilters = ( {
                                 <SelectContent>
                                     <SelectItem value="all">Any Date</SelectItem>
                                     {dateRanges.map( ( range ) => (
-                                        <SelectItem key={range.value} value={range.value}>
+                                        <SelectItem className="bg-black" key={range.value} value={range.value}>
                                             {range.label}
                                         </SelectItem>
                                     ) )}

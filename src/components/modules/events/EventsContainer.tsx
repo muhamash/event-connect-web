@@ -1,58 +1,20 @@
 "use client"
 
 
-import { Navbar } from "@/components/nav/Navbar";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { useMemo, useState } from "react";
+import { use } from "react";
 
-import { mockEvents } from "@/components/data/mockData";
-import { EventFilters, FilterState } from "@/components/modules/events/EventFilters";
+import { NewEventFilters } from "@/components/NewFilters";
+import Pagination from "@/components/Pagination";
 import { motion } from "framer-motion";
-import { Calendar, MapPin, Star, Users } from "lucide-react";
-import Link from "next/link";
+import EventCard from "./EventCard";
+import { MyEventsContainerProps } from "./MyEventsContainer";
 
 
-const Events = () => {
-  const [filters, setFilters] = useState<FilterState>({
-    search: "",
-    category: "",
-    location: "",
-    dateRange: "",
-    priceRange: [0, 200],
-  });
+const Events = ( { eventsPromise }: MyEventsContainerProps ) =>
+{
+  const myEventsData = use( eventsPromise );
+  console.log( myEventsData?.data )
 
-  const filteredEvents = useMemo(() => {
-    return mockEvents.filter((event) => {
-      // Search filter
-      if (filters.search) {
-        const searchLower = filters.search.toLowerCase();
-        const matchesSearch =
-          event.title.toLowerCase().includes(searchLower) ||
-          event.host.toLowerCase().includes(searchLower) ||
-          event.location.toLowerCase().includes(searchLower) ||
-          event.category.toLowerCase().includes(searchLower);
-        if (!matchesSearch) return false;
-      }
-
-      // Category filter
-      if (filters.category && filters.category !== "all") {
-        if (event.category !== filters.category) return false;
-      }
-
-      // Price filter
-      if (filters.priceRange[0] > 0 || filters.priceRange[1] < 200) {
-        if (
-          event.price < filters.priceRange[0] ||
-          event.price > filters.priceRange[1]
-        ) {
-          return false;
-        }
-      }
-
-      return true;
-    });
-  }, [filters]);
 
   const fadeInUp = {
     initial: { opacity: 0, y: 20 },
@@ -90,75 +52,29 @@ const Events = () => {
             transition={{ delay: 0.1 }}
             className="mb-8"
           >
-            <EventFilters
-              filters={filters}
-              onFilterChange={setFilters}
-              totalResults={filteredEvents.length}
+            <NewEventFilters
+              totalResults={myEventsData?.data?.pagination?.total || 0}
+              enabledFilters={{
+                search: true,
+                category: true,
+                location: true,
+                dateRange: true,
+                // priceRange: true
+              }}
             />
           </motion.div>
 
           {/* Events Grid */}
-          {filteredEvents.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredEvents.map((event, index) => (
-                <motion.div
-                  key={event.id}
-                  {...fadeInUp}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <Link href={`/events/${event.id}`}>
-                    <Card className="bg-card border-border hover:border-primary/50 transition-all group overflow-hidden h-full hover:shadow-card">
-                      <div className="relative h-48 overflow-hidden">
-                        <img
-                          src={event.image}
-                          alt={event.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                        />
-                        <div className="absolute top-3 right-3">
-                          <Badge className="bg-primary text-primary-foreground">
-                            {event.category}
-                          </Badge>
-                        </div>
-                      </div>
-                      <CardContent className="p-6">
-                        <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors">
-                          {event.title}
-                        </h3>
-
-                        <div className="space-y-2 mb-4">
-                          <div className="flex items-center text-muted-foreground text-sm">
-                            <Calendar className="h-4 w-4 mr-2 text-primary" />
-                            {event.date} at {event.time}
-                          </div>
-                          <div className="flex items-center text-muted-foreground text-sm">
-                            <MapPin className="h-4 w-4 mr-2 text-primary" />
-                            {event.location}
-                          </div>
-                          <div className="flex items-center text-muted-foreground text-sm">
-                            <Users className="h-4 w-4 mr-2 text-primary" />
-                            {event.attendees}/{event.maxAttendees} attending
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between pt-4 border-t border-border">
-                          <div className="flex items-center gap-1">
-                            <Star className="h-4 w-4 fill-secondary text-secondary" />
-                            <span className="font-semibold text-foreground">
-                              {event.rating}
-                            </span>
-                          </div>
-                          <span className="text-lg font-bold text-primary">
-                            {event.price === 0 ? "Free" : `$${event.price}`}
-                          </span>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <motion.div
+          {
+            myEventsData?.data?.events?.length > 0 ? (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-20">
+                {
+                  myEventsData?.data?.events?.map( e => (
+                    <EventCard key={e?.id} event={e} />
+                  ) )
+                }
+              </div>
+            ) : ( <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="text-center py-16"
@@ -168,8 +84,16 @@ const Events = () => {
               <p className="text-muted-foreground">
                 Try adjusting your filters or search terms
               </p>
-            </motion.div>
-          )}
+            </motion.div> )
+          }
+
+          {
+            myEventsData?.data?.events?.length > 0 && (
+              <div className='mt-20'>
+                <Pagination totalPages={myEventsData?.data?.pagination?.totalPages} />
+              </div>
+            )
+          }
         </div>
       </div>
     </div>

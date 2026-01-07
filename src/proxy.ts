@@ -19,7 +19,7 @@ export async function proxy ( request: NextRequest )
 
     if ( session && pathname === "/login" || session && pathname === "register" )
     {
-        return NextResponse.redirect(new URL("/profile", request.url));
+        return NextResponse.redirect(new URL("/", request.url));
     }
 
     // role based access
@@ -35,7 +35,7 @@ export async function proxy ( request: NextRequest )
 
     if ( !session && pathname === "/dashboard" || session && session?.user?.role === UserRole.USER )
     {
-        return NextResponse.redirect(new URL("/profile", request.url));
+        return NextResponse.redirect(new URL("/", request.url));
     }
 }
 

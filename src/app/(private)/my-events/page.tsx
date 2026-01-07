@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   description: 'Enjoy  events ...',
 }
 
-interface MyEventsPageProps
+export interface MyEventsPageProps
 {
     searchParams: RouteSearchParams;
 }
@@ -30,12 +30,12 @@ const MyEventsPage = async ({
         {
             role: sessionUser?.user?.role,
             userId: sessionUser?.user?.id,
-            page: Number( normalizeParam( searchParams?.page ) ) || 1,
-            category: normalizeParam( searchParams?.category ),
-            status: normalizeParam( searchParams?.status ),
-            search: normalizeParam( searchParams?.search ),
+            page: Number( normalizeParam( getSearchParams?.page ) ) || 1,
+            category: normalizeParam( getSearchParams?.category ),
+            status: normalizeParam( getSearchParams?.status ),
+            search: normalizeParam( getSearchParams?.search ),
         }
-    );;
+    );
     
     // console.log(sessionUser?.user?.role, sessionUser?.user?.id,getSearchParams )
 

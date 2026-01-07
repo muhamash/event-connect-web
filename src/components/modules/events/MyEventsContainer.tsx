@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { use } from 'react';
 import EventCard from './EventCard';
 
-interface MyEventsContainerProps
+export interface MyEventsContainerProps
 {
     eventsPromise: Promise<any>;
 }
@@ -14,7 +14,7 @@ interface MyEventsContainerProps
 const MyEventsContainer = ( { eventsPromise }: MyEventsContainerProps ) =>
 {
     const myEventsData = use( eventsPromise );
-    console.log( myEventsData?.data )
+    // console.log( myEventsData?.data )
     
     return (
         <div className="min-h-screen bg-background py-10">

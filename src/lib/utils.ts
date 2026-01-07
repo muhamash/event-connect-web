@@ -161,4 +161,86 @@ export const formatDate = (
 };
 
 export const normalizeParam = (param?: string | string[]) =>
-    Array.isArray(param) ? param[0] : param;
+    Array.isArray( param ) ? param[ 0 ] : param;
+
+
+export function resolveDateRange(range: string) {
+  const now = new Date();
+
+  const startOfDay = (d: Date) =>
+    new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
+
+  const endOfDay = (d: Date) =>
+    new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+
+  switch (range) {
+    case "today": {
+      return {
+        gte: startOfDay(now),
+        lte: endOfDay(now),
+      };
+    }
+
+    case "tomorrow": {
+      const tomorrow = new Date(now);
+      tomorrow.setDate(now.getDate() + 1);
+
+      return {
+        gte: startOfDay(tomorrow),
+        lte: endOfDay(tomorrow),
+      };
+    }
+
+    case "this-week": {
+      const start = new Date(now);
+      start.setDate(now.getDate() - now.getDay());
+
+      const end = new Date(start);
+      end.setDate(start.getDate() + 6);
+
+      return {
+        gte: startOfDay(start),
+        lte: endOfDay(end),
+      };
+    }
+
+    case "this-weekend": {
+      const saturday = new Date(now);
+      saturday.setDate(now.getDate() + (6 - now.getDay()));
+
+      const sunday = new Date(saturday);
+      sunday.setDate(saturday.getDate() + 1);
+
+      return {
+        gte: startOfDay(saturday),
+        lte: endOfDay(sunday),
+      };
+    }
+
+    case "next-week": {
+      const start = new Date(now);
+      start.setDate(now.getDate() + (7 - now.getDay()));
+
+      const end = new Date(start);
+      end.setDate(start.getDate() + 6);
+
+      return {
+        gte: startOfDay(start),
+        lte: endOfDay(end),
+      };
+    }
+
+    case "this-month": {
+      const start = new Date(now.getFullYear(), now.getMonth(), 1);
+      const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+      return {
+        gte: startOfDay(start),
+        lte: endOfDay(end),
+      };
+    }
+
+    default:
+      return null;
+  }
+};
