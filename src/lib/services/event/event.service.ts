@@ -288,3 +288,54 @@ export async function getAllEvents({
     };
   }
 };
+
+
+export async function getEventById(eventId: string) {
+  try {
+    if ( !eventId || typeof eventId !== "string" )
+    {
+      return {
+        success: false,
+        message: "Event ID is required",
+        data: null,
+      };
+    }
+
+    const event = await prisma.event.findUnique({
+      where: {
+        id: eventId,
+      },
+      include: {
+        host: true,
+        participants: true,
+      },
+    });
+
+
+    if (!event) {
+      return {
+        success: false,
+        message: "Event not found",
+        data: null,
+      };
+    }
+
+
+    return {
+      success: true,
+      message: "Event fetched successfully",
+      data: event,
+    };
+
+  }
+  catch ( error: any )
+  {
+    console.error("Error fetching event by ID:", error);
+
+    return {
+      success: false,
+      message: "Failed to fetch event",
+      data: null,
+    };
+  }
+}

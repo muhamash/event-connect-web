@@ -160,6 +160,29 @@ export const formatDate = (
     } ).format( date );
 };
 
+export function formatTo12Hour(time24: string): string {
+  if (!time24 || typeof time24 !== "string") return "";
+
+  const [hourStr, minute] = time24.split(":");
+
+  const hour = Number(hourStr);
+
+  if (
+    Number.isNaN(hour) ||
+    !minute ||
+    Number.isNaN(Number(minute)) ||
+    hour < 0 ||
+    hour > 23
+  ) {
+    return "";
+  }
+
+  const period = hour >= 12 ? "PM" : "AM";
+  const hour12 = hour % 12 || 12;
+
+  return `${hour12}:${minute.padStart(2, "0")} ${period}`;
+};
+
 export const normalizeParam = (param?: string | string[]) =>
     Array.isArray( param ) ? param[ 0 ] : param;
 
