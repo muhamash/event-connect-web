@@ -16,8 +16,10 @@ import
     Edit,
     Locate,
     MapPin,
+    PenIcon,
     Star,
-    Ticket
+    Ticket,
+    UserCheck2Icon
   } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -133,6 +135,16 @@ const Profile = ( { userPromise, sessionUser }: ProfileProps ) =>
             transition={{ delay: 0.1 }}
             className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
           >
+            <Card className="bg-card border-border">
+                  <CardContent className="p-6 text-center">
+                    <div className="flex items-center justify-center gap-2 text-accent mb-2">
+                      <UserCheck2Icon className="h-5 w-5" />
+                      <span className="text-2xl font-bold">{userData?.data?.role}</span>
+                    </div>
+                    <p className="text-muted-foreground text-sm">User role</p>
+                  </CardContent>
+            </Card>
+            
             {
               userData?.data?.role === UserRole.HOST && (
                 <>
@@ -162,7 +174,7 @@ const Profile = ( { userPromise, sessionUser }: ProfileProps ) =>
             }
 
             {
-              userData?.dat?.role === UserRole.USER && (
+              userData?.data?.role === UserRole.USER && (
                 <Card className="bg-card border-border">
                   <CardContent className="p-6 text-center">
                     <div className="flex items-center justify-center gap-2 text-accent mb-2">
@@ -170,6 +182,20 @@ const Profile = ( { userPromise, sessionUser }: ProfileProps ) =>
                       <span className="text-2xl font-bold">{userData?.data?.eventsAttended ?? 0}</span>
                     </div>
                     <p className="text-muted-foreground text-sm">Events Attended</p>
+                  </CardContent>
+                </Card>
+              )
+            }
+
+            {
+              userData?.data?.role === UserRole.USER && (
+                <Card className="bg-card border-border">
+                  <CardContent className="p-6 text-center">
+                    <div className="flex items-center justify-center gap-2 text-accent mb-2">
+                      <PenIcon className="h-5 w-5" />
+                      <span className="text-2xl font-bold">{userData?.data?.reviewsWritten?.length ?? 0}</span>
+                    </div>
+                    <p className="text-muted-foreground text-sm">Reviews written</p>
                   </CardContent>
                 </Card>
               )

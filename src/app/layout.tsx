@@ -1,8 +1,10 @@
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/nav/Navbar";
-import AuthProvider from "../providers/auth.provider";
+import { updateEventStatus } from "@/lib/scripts/eventCompleteCorn";
 import { Geist, Geist_Mono } from "next/font/google";
+import cron from "node-cron";
 import { Toaster } from "react-hot-toast";
+import AuthProvider from "../providers/auth.provider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -24,7 +26,15 @@ export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}> )
+{
+  cron.schedule( "*/10 * * * *", () =>
+  {
+    //  every 10 minutes
+    console.log( "Running event status update job..." );
+    updateEventStatus();
+  } );
+  
   return (
     <html lang="en">
       <body
