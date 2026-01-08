@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { UserRole } from "@/lib/constants/enum.constant";
+import { joinFreeEvent } from "@/lib/services/checkout/checkout.service";
 import { formatDate, formatTo12Hour } from "@/lib/utils";
 import { motion } from "framer-motion";
 import
@@ -19,19 +20,23 @@ import
   } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { use } from "react";
+import { use, useState } from "react";
+import toast from "react-hot-toast";
 import ShareButton from "./EventShareButton";
 
 interface EventDetailsProps
 {
   eventPromise: Promise<any>;
-  sessionRole: string;
+  sessionRole?: string;
+  sessionUserId?: string;
 }
 
-const EventDetails = ( { eventPromise, sessionRole }: EventDetailsProps ) =>
+const EventDetails = ( { eventPromise, sessionRole, sessionUserId }: EventDetailsProps ) =>
 {
   const router = useRouter();
-  const eventData = use( eventPromise )
+  const eventData = use( eventPromise );
+  const [showParticipants, setShowParticipants] = useState(false);
+
 
   if ( !eventData?.success )
   {
@@ -40,19 +45,38 @@ const EventDetails = ( { eventPromise, sessionRole }: EventDetailsProps ) =>
 
   console.log( eventData?.data )
 
+  const participants = eventData?.data?.participants ?? [];
+
+  const isAlreadyJoined = participants.some(
+    ( p: any ) => p.userId === sessionUserId
+  );
+
   const isFull =
     eventData?.data &&
     eventData?.data?.participants?.length >= eventData?.data?.maxParticipants;
 
   const isUser = sessionRole === UserRole.USER;
 
+  const handleJoinEvent = async () =>
+  {
+    if ( !eventData?.data?.id ) return;
+
+    const res = await joinFreeEvent( eventData.data.id );
+
+    if ( !res.success )
+    {
+      toast.error( res.message );
+      return;
+    }
+
+    toast.success( res.message );
+    router.refresh();
+  };
+
   // mock
   const { id } = useParams();
   const event = mockEvents.find((e) => e.id === Number(id)) || mockEvents[0];
   const host = mockUsers.find((u) => u.id === event.hostId) || mockUsers[0];
-
-  // Generate mock attendees list
-  const attendeesList = mockUsers.slice(0, Math.min(event.attendees, 4));
 
   return (
     <div className="min-h-screen bg-background">
@@ -184,31 +208,82 @@ const EventDetails = ( { eventPromise, sessionRole }: EventDetailsProps ) =>
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-xl font-bold text-foreground">
-                        Attendees ({eventData?.data?.maxParticipants}/{eventData?.data?.participants?.length})
+                        Attendees ({participants.length}/{eventData?.data?.maxParticipants})
                       </h3>
-                      <Users className="h-5 w-5 text-primary" />
+                      <Users onClick={() => setShowParticipants( true )} className="h-5 w-5 text-primary" />
                     </div>
-                    <div className="flex -space-x-2">
-                      {eventData?.data?.participants?.map( ( attendee, index ) => (
-                        <Avatar key={index} className="border-2 border-background">
-                          <AvatarImage src={attendee?.image} />
-                          <AvatarFallback>{attendee.fullname[ 0 ]}</AvatarFallback>
-                        </Avatar>
-                      ) )}
-                      {eventData?.data?.participants?.maxParticipants > eventData?.data?.participants?.length && (
-                        <div className="flex items-center justify-center h-10 w-10 rounded-full bg-muted border-2 border-background text-sm font-semibold text-foreground">
-                          +{event.attendees - attendeesList.length}
-                        </div>
-                      )}
-                      {
-                        eventData?.data?.participants?.length === 0 && (
-                          <p>No participants yet!</p>
-                        )
-                      }
-                    </div>
+
+                    {participants.length === 0 ? (
+                      <p className="text-muted-foreground">No participants yet!</p>
+                    ) : (
+                      <div className="flex -space-x-2 cursor-pointer">
+                        {participants.slice( 0, 5 ).map( ( p: any ) => (
+                          <Avatar
+                            key={p.id}
+                            className="border-2 border-background"
+                            
+                          >
+                            <AvatarImage src={p.user?.image ?? ""} />
+                            <AvatarFallback>
+                              {p.user?.fullname?.[ 0 ]}
+                            </AvatarFallback>
+                          </Avatar>
+                        ) )}
+
+                        {participants.length > 5 && (
+                          <div
+                            onClick={() => setShowParticipants( true )}
+                            className="flex items-center justify-center h-10 w-10 rounded-full bg-muted border-2 border-background text-sm font-semibold"
+                          >
+                            +{participants.length - 5}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </motion.div>
+
+              {showParticipants && (
+                <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
+                  <div className="bg-card rounded-xl w-full max-w-md max-h-[70vh] overflow-hidden">
+                    <div className="flex items-center justify-between p-4 border-b">
+                      <h3 className="font-semibold text-lg">Participants</h3>
+                      <button
+                        onClick={() => setShowParticipants( false )}
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        ✕
+                      </button>
+                    </div>
+
+                    <div className="p-4 space-y-3 overflow-y-auto max-h-[60vh]">
+                      {participants.map( ( p: any ) => (
+                        <div
+                          key={p.id}
+                          className="flex items-center gap-3"
+                        >
+                          <Avatar>
+                            <AvatarImage src={p.user?.image ?? ""} />
+                            <AvatarFallback>
+                              {p.user?.fullname?.[ 0 ]}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="font-medium">
+                            {p.user?.fullname}
+                          </span>
+                        </div>
+                      ) )}
+                      {
+                        participants?.length === 0 && (
+                          <p>No one is here!</p>
+                        )
+                      }
+                    </div>
+                  </div>
+                </div>
+              )}
+
             </div>
 
             {/* Sidebar */}
@@ -228,36 +303,27 @@ const EventDetails = ( { eventPromise, sessionRole }: EventDetailsProps ) =>
                       <p className="text-muted-foreground">per person</p>
                     </div>
 
-                    {/* {sessionRole === UserRole.USER &&
-                      eventData?.data &&
-                      eventData.data.participants.length < eventData.data.maxParticipants && (
-                        <Link
-                          href={`/events/${ eventData.data.id }/checkout?tickets=1`}
-                        >
-                          <Button
-                            size="lg"
-                            className="w-full bg-gradient-primary text-primary-foreground hover:shadow-glow mb-4"
-                          >
-                            {eventData.data.joiningFee === 0
-                              ? "Join Event (Free)"
-                              : `Join Event - $${ eventData.data.joiningFee }`}
-                          </Button>
-                        </Link>
-                      )} */}
-
-                    {isUser && eventData?.data && (
+                    {isUser && eventData?.data && !isAlreadyJoined && (
                       <>
                         {!isFull ? (
-                          <Link href={`/events/${ eventData?.data?.id }/checkout?tickets=1`}>
+                          eventData.data.joiningFee === 0 ? (
                             <Button
                               size="lg"
                               className="w-full bg-gradient-primary text-primary-foreground hover:shadow-glow mb-4"
+                              onClick={handleJoinEvent}
                             >
-                              {eventData?.data?.joiningFee === 0
-                                ? "Join Event (Free)"
-                                : `Join Event - $${ eventData?.data?.joiningFee }`}
+                              Join Event (Free)
                             </Button>
-                          </Link>
+                          ) : (
+                            <Link href={`/events/${ eventData.data.id }/checkout`}>
+                              <Button
+                                size="lg"
+                                className="w-full bg-gradient-primary text-primary-foreground hover:shadow-glow mb-4"
+                              >
+                                Join Event – ${eventData.data.joiningFee}
+                              </Button>
+                            </Link>
+                          )
                         ) : (
                           <Button
                             size="lg"
@@ -269,6 +335,17 @@ const EventDetails = ( { eventPromise, sessionRole }: EventDetailsProps ) =>
                         )}
                       </>
                     )}
+
+                    {isAlreadyJoined && (
+                      <Button
+                        size="lg"
+                        disabled
+                        className="w-full mb-4 bg-muted text-muted-foreground cursor-not-allowed"
+                      >
+                        You have already joined
+                      </Button>
+                    )}
+
 
                     <div className="space-y-3 pt-4 border-t border-border">
                       <div className="flex items-center justify-between text-sm">

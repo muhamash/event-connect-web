@@ -63,7 +63,7 @@ const EventCard: React.FC<EventCardProps> = ({
               </div>
               <div className="flex items-center">
                 <Users className="h-4 w-4 mr-2 text-primary" />
-                {event?.participants?.length}/{event?.maxParticipants} attending
+                {event?.participants?.length}/{event?.maxParticipants} attended
               </div>
             </div>
 

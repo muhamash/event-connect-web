@@ -56,7 +56,7 @@ export default async function EventDetailsPage ({
 
   return (
     <Suspense fallback={<EventDetailsSkeleton/>}>
-      <EventDetails sessionRole={sessionUser?.user?.role} eventPromise={ getEvent } />
+      <EventDetails sessionRole={sessionUser?.user?.role} eventPromise={getEvent} sessionUserId={ sessionUser?.user?.id } />
     </Suspense>
   )
 }

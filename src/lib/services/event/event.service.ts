@@ -304,15 +304,34 @@ export async function getEventById(eventId: string) {
       };
     }
 
-    const event = await prisma.event.findUnique({
-      where: {
-        id: eventId,
-      },
+    const event = await prisma.event.findUnique( {
+      where: { id: eventId },
       include: {
-        host: true,
-        participants: true,
+        host: {
+          select: {
+            id: true,
+            fullname: true,
+            image: true,
+            rating: true,
+            totalReviews: true,
+          },
+        },
+        participants: {
+          orderBy: {
+            joinedAt: "asc",
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                fullname: true,
+                image: true,
+              },
+            },
+          },
+        },
       },
-    });
+    } );
 
 
     if (!event) {

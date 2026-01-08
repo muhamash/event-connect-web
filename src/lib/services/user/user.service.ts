@@ -14,7 +14,22 @@ export const getUserInfoById = async ( id: string ) =>
             },
             include: {
                 hostedEvents: true,
-                joinedEvents: true,
+                joinedEvents: {
+                    include: {
+                        event: {
+                            select: {
+                                id: true,
+                                title: true,
+                                image: true,
+                                date: true,
+                                time: true,
+                                location: true,
+                                status: true,
+                            },
+                        },
+                    },
+                },
+
                 reviewsReceived: true,
                 reviewsWritten: true,
                 // password: false
@@ -34,7 +49,7 @@ export const getUserInfoById = async ( id: string ) =>
         return {
             success: true,
             message: "User fetched",
-            data : JSON.parse(JSON.stringify(existingUser))
+            data: JSON.parse( JSON.stringify( existingUser ) )
         }
     }
     catch ( error: any )

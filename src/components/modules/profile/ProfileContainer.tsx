@@ -1,13 +1,13 @@
 "use client"
 
-import { mockEvents, mockReviews, mockUsers } from "@/components/data/mockData";
+import { mockReviews, mockUsers } from "@/components/data/mockData";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EventStatus, UserRole } from "@/lib/constants/enum.constant";
-import { formatDate } from "@/lib/utils";
+import { formatDate, shuffleArray } from "@/lib/utils";
 import { motion } from "framer-motion";
 import
   {
@@ -41,7 +41,9 @@ const Profile = ( { userPromise, sessionUser }: ProfileProps ) =>
   const isOwnProfile = userData?.data?.id === sessionUser;
 
   const hostedEventsCompleted = userData?.data?.hostedEvents?.filter( ( e ) => e.status === EventStatus.COMPLETED );
-  const attendedEvents = mockEvents.slice( 0, 3 );
+
+  const randomJoinedEvents = shuffleArray( userData?.data?.joinedEvents ?? [] );
+
   const userReviews = mockReviews;
 
   if ( !userData || ( userData as any ).success === false )
@@ -266,48 +268,63 @@ const Profile = ( { userPromise, sessionUser }: ProfileProps ) =>
                           <CalendarDays className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                           <h3 className="text-xl font-bold mb-2">No  {EventStatus.COMPLETED} Events Hosted Yet</h3>
                           
-                            {
-                              isOwnProfile && (
-                                <Link href="/events/create">
-                            <Button className="bg-gradient-primary">
-                              Create Your Event
-                            </Button>
-                          </Link>
-                              )
+                          {
+                            isOwnProfile && (
+                              <Link href="/events/create">
+                                <Button className="bg-gradient-primary">
+                                  Create Your Event
+                                </Button>
+                              </Link>
+                            )
                           }
                         </CardContent>
                       </Card>
                     )}
                   </TabsContent>
 
-                  <TabsContent value="attended">
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {attendedEvents.map( ( event ) => (
-                        <Link key={event.id} href={`/events/${ event.id }`}>
-                          <Card className="bg-card border-border hover:border-primary/50 transition-all group overflow-hidden">
-                            <div className="relative h-40 overflow-hidden">
-                              <img
-                                src={event.image}
-                                alt={event.title}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                              />
-                              <Badge className="absolute top-3 left-3 bg-secondary text-secondary-foreground">
-                                Attended
-                              </Badge>
-                            </div>
-                            <CardContent className="p-4">
-                              <h3 className="font-bold text-foreground group-hover:text-primary transition-colors">
-                                {event.title}
-                              </h3>
-                              <p className="text-sm text-muted-foreground">
-                                {event.date}
-                              </p>
-                            </CardContent>
-                          </Card>
-                        </Link>
-                      ) )}
-                    </div>
-                  </TabsContent>
+                  {
+                    userData?.data?.role === UserRole.USER && (
+                      <TabsContent className="relative" value="attended">
+                        <Link className="bg-amber-500 text-white px-3 py-2 rounded-md shadow absolute -top-18 right-0" href={"/my-events"}>View all</Link>
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {randomJoinedEvents?.slice(0,3)?.map( ( { event } ) => (
+                            <Link key={event.id} href={`/events/${ event.id }`}>
+                              <Card className="bg-card border-border hover:border-primary/50 transition-all group overflow-hidden">
+                                <div className="relative h-40 overflow-hidden">
+                                  <img
+                                    src={event.image}
+                                    alt={event.title}
+                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                  />
+                                  <Badge className="absolute top-3 left-3 bg-secondary text-secondary-foreground">
+                                    Attended
+                                  </Badge>
+                                </div>
+                                <CardContent className="p-4">
+                                  <h3 className="font-bold text-foreground group-hover:text-primary transition-colors">
+                                    {event.title}
+                                  </h3>
+                                  <p className="text-sm text-muted-foreground">
+                                    {formatDate( event.date, { withTime: false } )} {event.time && ` • ${ event.time }`}
+                                  </p>
+                                  <div className="flex items-center gap-1 mt-1 text-muted-foreground text-sm">
+                                    <MapPin className="h-4 w-4" />
+                                    <span>{event.location}</span>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            </Link>
+                          ) )}
+                          {
+                            randomJoinedEvents?.length === 0 && (
+                              <p>No joined event found!</p>
+                            )
+                          }
+                        </div>
+                      </TabsContent>
+                    )
+                  }
+
 
                   <TabsContent value="reviews">
                     <div className="space-y-4">

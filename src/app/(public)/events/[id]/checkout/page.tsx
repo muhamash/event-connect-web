@@ -54,7 +54,7 @@ export default async function CheckoutPage({
     <Suspense fallback={
       <CheckoutSkeleton/>
     }>
-      <Checkout/>
+      <Checkout eventPromise={getEvent} sessionUser={ sessionUser?.user } />
     </Suspense>
   )
 }
