@@ -5,8 +5,7 @@ import
     LogOut,
     Plus,
     Shield,
-    User,
-    Users,
+    User
   } from "lucide-react";
 import { NavItem } from "../../types/utils.type";
 
@@ -47,14 +46,8 @@ export const NAV_ITEMS: NavItem[] = [
     roles: ["admin"],
   },
   {
-    label: "Manage Users",
-    href: "/admin?tab=users",
-    icon: Users,
-    roles: ["admin"],
-  },
-  {
-    label: "Manage Events",
-    href: "/admin?tab=events",
+    label: "View all Events",
+    href: "/events",
     icon: CalendarDays,
     roles: ["admin"],
   },

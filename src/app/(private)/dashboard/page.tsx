@@ -7,6 +7,7 @@ import { normalizeParam } from "@/lib/utils";
 import { RouteSearchParams } from "@/types/pages.type";
 import { Metadata } from "next";
 import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
@@ -24,6 +25,16 @@ export default async function DashboardPage ({searchParams}:DashboardProps)
 {
   const getSearchParams = await searchParams;
   const sessionUser = await getServerSession( authOptions );
+
+  if ( sessionUser?.user?.role === "ADMIN" )
+  {
+    redirect("/admin")
+  }
+
+  if ( sessionUser?.user?.role === "USER" )
+  {
+    redirect("/profile")
+  }
 
   const eventsPromise = getEventForTheUserBasedOnRole(
     {

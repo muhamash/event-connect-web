@@ -24,13 +24,12 @@ import { UserRole } from "@/lib/constants/enum.constant";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { mockUsers } from "../data/mockData";
 
-const Index = ( {role}: any ) =>
+const Index = ( { role }: any ) =>
 {
   const router = useRouter();
 
-  const topHosts = mockUsers.filter( u => u.isHost ).slice( 0, 4 );
+  // const topHosts = mockUsers.filter( u => u.isHost ).slice( 0, 4 );
   const fadeInUp = {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
@@ -309,7 +308,7 @@ const Index = ( {role}: any ) =>
       </section>
 
       {/* Top-Rated Hosts Section */}
-      <section className="py-20 bg-card/30">
+      {/* <section className="py-20 bg-card/30">
         <div className="container mx-auto px-4">
           <motion.div {...fadeInUp} className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
@@ -355,7 +354,7 @@ const Index = ( {role}: any ) =>
             ) )}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Testimonials Section */}
       <section className="py-20">
@@ -403,15 +402,29 @@ const Index = ( {role}: any ) =>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Join thousands of people making real connections through shared experiences
           </p>
-          <Link href="/register">
-            <Button
-              size="lg"
-              className="bg-gradient-primary text-primary-foreground hover:shadow-glow text-lg px-12 py-6"
-            >
-              Join EventConnect Today
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
+          {
+            role ? (
+              <Link href={`/events`}>
+                <Button
+                  size="lg"
+                  className="bg-gradient-primary text-primary-foreground hover:shadow-glow text-lg px-12 py-6"
+                >
+                  Explore our events
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            ) : (
+              <Link href={`/register`}>
+                <Button
+                  size="lg"
+                  className="bg-gradient-primary text-primary-foreground hover:shadow-glow text-lg px-12 py-6"
+                >
+                  Join EventConnect Today
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            )
+          }
         </motion.div>
       </section>
 

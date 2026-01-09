@@ -1,7 +1,18 @@
+import { authOptions } from "@/lib/services/auth/auth.option";
 import { CheckCircle } from "lucide-react";
+import { getServerSession } from "next-auth";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
-export default async function SuccessPage() {
+export default async function SuccessPage ()
+{
+  const sessionUser = await getServerSession( authOptions );
+  
+  if ( !sessionUser )
+  {
+    redirect("/login")
+  }
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b0b0b] via-[#141414] to-black px-4">
       <div className="max-w-md w-full rounded-2xl border border-yellow-500/20 bg-gradient-to-b from-[#1a1a1a] to-[#0f0f0f] shadow-[0_0_60px_rgba(255,180,0,0.15)] p-8 text-center">
