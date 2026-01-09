@@ -14,7 +14,8 @@ export async function POST(req: Request) {
   
   if (!sig) return NextResponse.json({ error: "Missing signature" }, { status: 400 });
 
-  const body = await req.text();
+  const bodyBuffer = await req.arrayBuffer();
+  const body = Buffer.from( bodyBuffer );
 
   if (!body) return NextResponse.json({ error: "Empty body" }, { status: 400 });
 
