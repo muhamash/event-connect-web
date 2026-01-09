@@ -8,13 +8,14 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
 
-  console.log( "this is running!!" )
+  console.log( "this is running!!", req.headers )
   
-  const sig = req.headers.get("stripe-signature");
+  const sig = req.headers.get( "stripe-signature" );
+  
   if (!sig) return NextResponse.json({ error: "Missing signature" }, { status: 400 });
 
-
   const body = await req.text();
+
   if (!body) return NextResponse.json({ error: "Empty body" }, { status: 400 });
 
   let event: Stripe.Event;
@@ -25,13 +26,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: err.message }, { status: 400 });
   }
 
-
   const response = NextResponse.json({ received: true });
-
 
   (async () => {
     try {
-      if (event.type === "checkout.session.completed") {
+      if ( event.type === "checkout.session.completed" )
+      {
+        
         const session = event.data.object as Stripe.Checkout.Session;
         console.log( session );
 
