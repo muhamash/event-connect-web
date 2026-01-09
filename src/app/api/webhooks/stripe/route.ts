@@ -19,6 +19,7 @@ export async function POST(req: Request) {
   if (!body) return NextResponse.json({ error: "Empty body" }, { status: 400 });
 
   let event: Stripe.Event;
+
   try {
     event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
   } catch (err: any) {
