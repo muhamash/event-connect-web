@@ -134,7 +134,7 @@ const Index = () => {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-            <Link href="/host">
+            <Link href="/register?tabs=HOST">
               <Button
                 size="lg"
                 variant="outline"

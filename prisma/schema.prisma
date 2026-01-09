@@ -138,7 +138,7 @@ model Payment {
 
   status    PaymentStatus @default(PENDING)
   provider  String        // Stripe, SSLCommerz, AmarPay
-  txnId     String?
+  txnId     String?       @unique
 
   createdAt DateTime      @default(now())
 

@@ -22,6 +22,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { use, useState } from "react";
 import toast from "react-hot-toast";
+import CheckoutButton from "../checkout/CheckoutButton";
 import ShareButton from "./EventShareButton";
 
 interface EventDetailsProps
@@ -43,7 +44,7 @@ const EventDetails = ( { eventPromise, sessionRole, sessionUserId }: EventDetail
     router?.push("/not-found")
   }
 
-  console.log( eventData?.data )
+  // console.log( eventData?.data )
 
   const participants = eventData?.data?.participants ?? [];
 
@@ -54,6 +55,8 @@ const EventDetails = ( { eventPromise, sessionRole, sessionUserId }: EventDetail
   const isFull =
     eventData?.data &&
     eventData?.data?.participants?.length >= eventData?.data?.maxParticipants;
+  
+  console.log( isFull, isAlreadyJoined, eventData );
 
   const isUser = sessionRole === UserRole.USER;
 
@@ -126,7 +129,7 @@ const EventDetails = ( { eventPromise, sessionRole, sessionUserId }: EventDetail
                         <Calendar className="h-5 w-5 mr-3 text-primary" />
                         <div>
                           <p className="font-semibold">Date</p>
-                          <p className="text-muted-foreground">{formatDate( eventData?.data?.date, { withTime: false } )}</p>
+                          <p className="text-muted-foreground">{formatDate( eventData?.data?.date, { withTime: false } ) || ""}</p>
                         </div>
                       </div>
                       <div className="flex items-center text-foreground">
@@ -315,14 +318,7 @@ const EventDetails = ( { eventPromise, sessionRole, sessionUserId }: EventDetail
                               Join Event (Free)
                             </Button>
                           ) : (
-                            <Link href={`/events/${ eventData.data.id }/checkout`}>
-                              <Button
-                                size="lg"
-                                className="w-full bg-gradient-primary text-primary-foreground hover:shadow-glow mb-4"
-                              >
-                                Join Event – ${eventData.data.joiningFee}
-                              </Button>
-                            </Link>
+                            <CheckoutButton eventId={ eventData?.data?.id }/>
                           )
                         ) : (
                           <Button
